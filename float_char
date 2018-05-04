@@ -1,0 +1,60 @@
+【方法一：使用共用体】
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+void main(void)
+{
+     union result       //共用体：使不同的数据类型共享相同的地址空间
+     {
+         float d;       //四字节
+         unsigned char data[4];
+     }r1,r2;
+     r1.d=7.215487;
+	 //字节依次传输
+     r2.data[0]=r1.data[0];     //低位字节
+     r2.data[1]=r1.data[1];     
+     r2.data[2]=r1.data[2];
+     r2.data[3]=r1.data[3];     //高位字节
+    printf("byte0= %d byte1= %d byte2= %d byte3= %d       
+    r1=%f\n",r1.data[0],r1.data[1],r1.data[2],r1.data[3],r1.d);
+    printf("%f\n",r2.d);  
+    system("pause");
+}
+
+【方法二：内存操作函数】
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+void main(void)
+{
+    float a=7.215487,test;
+    unsigned char byte[4];
+    memcpy(byte,&a,sizeof(float));    //将变量a的前4个字节copy到byte数组中
+    printf("%d %d %d %d \n",byte[0],byte[1],byte[2],byte[3]);
+    memcpy(&test,byte,sizeof(float));
+    printf("result %f\n",test);
+	system("pause");     
+}
+
+【方法三：移位传输】
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+void main(void)
+{
+    float a=7.215487,test=0.0;
+    int b=0;
+    unsigned char byte[4];
+	b=a*1000000;      //小数变为整数
+        byte[3] = b>>24;     //字节移位
+	byte[2] = b>>16;
+	byte[1] = b>>8;
+	byte[0] = b>>0;          
+    printf("%d %d %d %d \n",byte[0],byte[1],byte[2],byte[3]);
+    test=(byte[0]+(byte[1]<<8)+(byte[2]<<16)+(byte[3]<<24))/1000000.0;     //合成四个字节
+    printf("result %f\n",test);
+	system("pause");     
+}
